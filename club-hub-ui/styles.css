@@ -272,3 +272,35 @@ html, body {
   "@angular/material/prebuilt-themes/indigo-pink.css",
   "src/styles.scss"
 ],
+
+
+// navigation.component.html
+<div class="fixed left-0 top-0 h-full w-16 bg-gray-900 text-white flex flex-col items-center py-4 space-y-4 shadow-lg">
+  <button mat-icon-button 
+    [class]="{'bg-gray-700': currentPage === 'home'}"
+    (click)="onNavigate.emit('home')"
+    matTooltip="Home">
+    <mat-icon>home</mat-icon>
+  </button>
+  
+  <button mat-icon-button
+    [class]="{'bg-gray-700': currentPage === 'wordle'}"
+    (click)="onNavigate.emit('wordle')"
+    matTooltip="Wordle">
+    <mat-icon>games</mat-icon>
+  </button>
+
+  <button mat-icon-button
+    (click)="onAddEvent.emit()"
+    matTooltip="Add Event"
+    class="mt-auto mb-4">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+<button mat-icon-button 
+  [class.bg-gray-700]="currentPage === 'home'"
+  (click)="onNavigate.emit('home')"
+  matTooltip="Home">
+  <mat-icon>home</mat-icon>
+</button>
