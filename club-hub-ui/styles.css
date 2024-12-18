@@ -1,0 +1,274 @@
+// styles.scss
+@use '@angular/material' as mat;
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.mat-mdc-button-base {
+  &.active {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+
+// navigation.component.html
+<div class="navigation-container">
+  <button mat-icon-button 
+    [ngClass]="{'active-nav': currentPage === 'home'}"
+    (click)="onNavigate.emit('home')"
+    matTooltip="Home">
+    <mat-icon>home</mat-icon>
+  </button>
+  
+  <button mat-icon-button
+    [ngClass]="{'active-nav': currentPage === 'wordle'}"
+    (click)="onNavigate.emit('wordle')"
+    matTooltip="Wordle">
+    <mat-icon>games</mat-icon>
+  </button>
+
+  <button mat-icon-button
+    (click)="onAddEvent.emit()"
+    matTooltip="Add Event"
+    class="add-button">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+
+// navigation.component.scss
+.navigation-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 64px;
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+  button {
+    margin-bottom: 1rem;
+    color: white;
+
+    &.active-nav {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .add-button {
+    margin-top: auto;
+    margin-bottom: 1rem;
+  }
+
+  .mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+
+// app.component.html
+<div class="app-container">
+  <app-navigation 
+    [currentPage]="currentPage"
+    (onNavigate)="setCurrentPage($event)"
+    (onAddEvent)="openAddEventDialog()">
+  </app-navigation>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1>{{currentPage === 'home' ? 'Event Tracker' : 'Wordle Game'}}</h1>
+    </header>
+
+    @if (currentPage === 'home') {
+      <app-home />
+    } @else if (currentPage === 'wordle') {
+      <app-wordle />
+    }
+  </main>
+</div>
+
+
+// app.component.scss
+.app-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  display: flex;
+
+  .main-content {
+    flex: 1;
+    margin-left: 64px;
+    padding: 2rem;
+
+    .page-header {
+      margin-bottom: 2rem;
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+  }
+}
+
+
+// home.component.html
+<div class="home-grid">
+  <mat-card class="info-card">
+    <mat-card-header>
+      <mat-card-title>Personal Info</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="info-item">
+        <span class="label">Name:</span>
+        <span class="value">John Doe</span>
+      </div>
+      <div class="info-item">
+        <span class="label">Email:</span>
+        <span class="value">john.doe@example.com</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="events-card">
+    <mat-card-header>
+      <mat-card-title>Upcoming Events</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (events$ | async; as events) {
+        @if (events.length === 0) {
+          <div class="no-events">No upcoming events</div>
+        } @else {
+          @for (event of events; track event.id) {
+            <div class="event-item">
+              <div class="event-header">
+                <span class="event-title">{{event.title}}</span>
+                <span class="event-date">{{event.date | date:'longDate'}}</span>
+              </div>
+              @if (event.description) {
+                <p class="event-description">{{event.description}}</p>
+              }
+            </div>
+          }
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
+
+
+// home.component.scss
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+
+  .info-card, .events-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    mat-card-header {
+      padding: 1.5rem 1.5rem 0;
+
+      mat-card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+
+    mat-card-content {
+      padding: 1.5rem;
+    }
+  }
+
+  .info-item {
+    margin-bottom: 0.75rem;
+
+    .label {
+      font-weight: 500;
+      color: #666;
+      margin-right: 0.5rem;
+    }
+
+    .value {
+      color: #333;
+    }
+  }
+
+  .event-item {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-title {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .event-date {
+      font-size: 0.875rem;
+      color: #666;
+    }
+
+    .event-description {
+      font-size: 0.875rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+  }
+
+  .no-events {
+    color: #666;
+    font-style: italic;
+  }
+}
+
+// add-event.component.scss
+:host {
+  display: block;
+  padding: 1.5rem;
+
+  h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  mat-dialog-actions {
+    margin-top: 1.5rem;
+    padding: 0;
+    gap: 1rem;
+  }
+}
+
+"styles": [
+  "@angular/material/prebuilt-themes/indigo-pink.css",
+  "src/styles.scss"
+],
